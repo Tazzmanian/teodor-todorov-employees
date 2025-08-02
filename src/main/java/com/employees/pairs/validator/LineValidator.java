@@ -12,7 +12,7 @@ public class LineValidator {
     private final DateParserProcessor dateParserProcessor;
 
     public boolean validate(String[] data) {
-        return data.length == 4 && isInteger(data[0]) && isInteger(data[1])
+        return data.length >= 4 && isInteger(data[0]) && isInteger(data[1])
                 && dateParserProcessor.isDate(data[2]) && dateParserProcessor.isDate(data[3]);
     }
 

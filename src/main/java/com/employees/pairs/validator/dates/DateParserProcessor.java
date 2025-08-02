@@ -1,6 +1,6 @@
 package com.employees.pairs.validator.dates;
 
-import ch.qos.logback.core.util.StringUtil;
+import io.micrometer.common.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -17,7 +17,7 @@ public abstract class DateParserProcessor {
     }
 
     public boolean isDate(String date) {
-        if (StringUtil.isNullOrEmpty(date)) {
+        if (StringUtils.isBlank(date)) {
             return true;
         }
 
@@ -38,7 +38,7 @@ public abstract class DateParserProcessor {
     }
 
     public LocalDate parse(String date) {
-        if (StringUtil.isNullOrEmpty(date)) {
+        if (StringUtils.isBlank(date)) {
             return LocalDate.now();
         }
 

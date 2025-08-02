@@ -1,6 +1,5 @@
 package com.employees.pairs.controller;
 
-import com.employees.pairs.model.PairsResponse;
 import com.employees.pairs.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -21,7 +18,7 @@ public class FileController {
     private final FileService fileService;
 
     @PostMapping("upload")
-    public List<PairsResponse> loadFile(@RequestParam("file") MultipartFile file, @RequestParam(defaultValue = ";", name = "delimiter") char delimiter) {
+    public String loadFile(@RequestParam("file") MultipartFile file, @RequestParam(defaultValue = ";", name = "delimiter") char delimiter) {
         log.info(file.toString());
         return fileService.getPairs(file, delimiter);
     }

@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,17 +31,61 @@ public class FileService {
     private final LineValidator lineValidator;
     private final DateParserProcessor dateParserProcessor;
 
-    public List<PairsResponse> getPairs(MultipartFile file, char delimiter) {
+    public String getPairs(MultipartFile file, char delimiter) {
         var lines = readAllLines(file, delimiter);
         var data = parseData(lines);
         var grouped = data.stream().collect(Collectors.groupingBy(EmployeeData::projectId));
 
-        return transformGroupData(grouped);
+        var transformed = transformGroupData(grouped);
+
+        transformed.sort(Comparator.comparing(PairsResponse::days).reversed());
+
+        log.info("{} - {} : {}", transformed.getFirst().employee1(), transformed.getFirst().employee2(),
+                transformed.getFirst().days());
+
+        var longest = transformed.getFirst();
+
+        StringBuffer sb = new StringBuffer();
+        sb.append(longest.employee1())
+                .append(", ")
+                .append(longest.employee2())
+                .append(", ")
+                .append(longest.days());
+
+        return sb.toString();
     }
 
     public List<PairsResponse> transformGroupData(Map<Integer, List<EmployeeData>> grouped) {
+        List<PairsResponse> response = new ArrayList<>();
 
-        return null;
+        for (var group : grouped.entrySet()) {
+            var projectId = group.getKey();
+            var list = group.getValue();
+
+            if (list.size() == 1) {
+                response.add(new PairsResponse(list.getFirst().employeeId(), null, 0L));
+                continue;
+            }
+
+            for (int i = 0; i < list.size(); i++) {
+                for (int j = i + 1; j < list.size(); j++) {
+                    var emp1 = list.get(i);
+                    var emp2 = list.get(j);
+
+                    var start = emp1.dateFrom().isAfter(emp2.dateFrom()) ? emp1.dateFrom() : emp2.dateFrom();
+                    var end = emp1.dateTo().isBefore(emp2.dateTo()) ? emp1.dateTo() : emp2.dateTo();
+
+                    if (start.isBefore(end)) {
+                        var days = ChronoUnit.DAYS.between(start, end) + 1;
+                        log.debug("{} - {} : {} | {}", emp1.employeeId(), emp2.employeeId(),
+                                days, projectId);
+                        response.add(new PairsResponse(emp1.employeeId(), emp2.employeeId(), days));
+                    }
+                }
+            }
+        }
+
+        return response;
     }
 
     private List<String[]> readAllLines(MultipartFile file, char delimiter) {
