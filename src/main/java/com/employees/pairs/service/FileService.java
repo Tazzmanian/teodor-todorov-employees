@@ -14,13 +14,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -43,16 +47,30 @@ public class FileService {
         log.info("{} - {} : {}", transformed.getFirst().employee1(), transformed.getFirst().employee2(),
                 transformed.getFirst().days());
 
-        var longest = transformed.getFirst();
+        var longestOverlap = transformed.getFirst();
 
         StringBuffer sb = new StringBuffer();
-        sb.append(longest.employee1())
+        sb.append(longestOverlap.employee1())
                 .append(", ")
-                .append(longest.employee2())
+                .append(longestOverlap.employee2())
                 .append(", ")
-                .append(longest.days());
+                .append(longestOverlap.days());
 
         return sb.toString();
+    }
+
+    public void populateModelWithPairs(RedirectAttributes model, MultipartFile file, char delimiter) {
+        var lines = readAllLines(file, delimiter);
+        var data = parseData(lines);
+
+        model.addFlashAttribute("list", data);
+
+        var grouped = data.stream().collect(Collectors.groupingBy(EmployeeData::projectId));
+        var transformed = transformGroupData(grouped);
+        transformed.sort(Comparator.comparing(PairsResponse::days).reversed());
+        var longestOverlap = transformed.getFirst();
+
+        model.addFlashAttribute("longestOverlap", longestOverlap);
     }
 
     public List<PairsResponse> transformGroupData(Map<Integer, List<EmployeeData>> grouped) {
