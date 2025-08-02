@@ -1,7 +1,7 @@
 package com.employees.pairs.controller;
 
 
-import com.employees.pairs.service.FileService;
+import com.employees.pairs.service.FileServiceUI;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 public class UiController {
 
-    private final FileService fileService;
+    private final FileServiceUI fileService;
 
     @GetMapping("/")
     public String files (Model model) {

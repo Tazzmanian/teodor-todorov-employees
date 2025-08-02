@@ -30,11 +30,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class FileService {
+public class FileService implements FileServiceRest, FileServiceUI {
 
     private final LineValidator lineValidator;
     private final DateParserProcessor dateParserProcessor;
 
+    @Override
     public String getPairs(MultipartFile file, char delimiter) {
         var lines = readAllLines(file, delimiter);
         var data = parseData(lines);
@@ -59,6 +60,7 @@ public class FileService {
         return sb.toString();
     }
 
+    @Override
     public void populateModelWithPairs(RedirectAttributes model, MultipartFile file, char delimiter) {
         var lines = readAllLines(file, delimiter);
         var data = parseData(lines);
@@ -76,7 +78,7 @@ public class FileService {
         model.addFlashAttribute("longestOverlap", longestOverlap);
     }
 
-    public List<PairsResponse> transformGroupData(Map<Integer, List<EmployeeData>> grouped) {
+    private List<PairsResponse> transformGroupData(Map<Integer, List<EmployeeData>> grouped) {
         List<PairsResponse> response = new ArrayList<>();
 
         for (var group : grouped.entrySet()) {
