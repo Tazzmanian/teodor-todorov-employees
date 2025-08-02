@@ -68,6 +68,9 @@ public class FileService {
         var grouped = data.stream().collect(Collectors.groupingBy(EmployeeData::projectId));
         var transformed = transformGroupData(grouped);
         transformed.sort(Comparator.comparing(PairsResponse::days).reversed());
+
+        model.addFlashAttribute("datagrid", transformed);
+
         var longestOverlap = transformed.getFirst();
 
         model.addFlashAttribute("longestOverlap", longestOverlap);
@@ -81,7 +84,7 @@ public class FileService {
             var list = group.getValue();
 
             if (list.size() == 1) {
-                response.add(new PairsResponse(list.getFirst().employeeId(), null, 0L));
+                response.add(new PairsResponse(list.getFirst().employeeId(), null, projectId, 0L));
                 continue;
             }
 
@@ -97,7 +100,7 @@ public class FileService {
                         var days = ChronoUnit.DAYS.between(start, end) + 1;
                         log.debug("{} - {} : {} | {}", emp1.employeeId(), emp2.employeeId(),
                                 days, projectId);
-                        response.add(new PairsResponse(emp1.employeeId(), emp2.employeeId(), days));
+                        response.add(new PairsResponse(emp1.employeeId(), emp2.employeeId(), projectId, days));
                     }
                 }
             }
