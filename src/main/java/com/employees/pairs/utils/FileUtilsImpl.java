@@ -60,7 +60,6 @@ public class FileUtilsImpl implements FileUtils {
             List<EmployeeData> employeesData = group.getValue();
 
             if (employeesData.size() == 1) {
-                response.add(new PairsResponse(employeesData.getFirst().employeeId(), null, projectId, 0L));
                 continue;
             }
 
