@@ -2,7 +2,7 @@ package com.employees.pairs.validator.dates;
 
 import java.util.List;
 
-public class ShortYearDateFormats extends DateParserProcessor {
+class ShortYearDateFormats extends DateParserProcessor {
 
     public ShortYearDateFormats(DateParserProcessor parser) {
         super(parser, List.of(

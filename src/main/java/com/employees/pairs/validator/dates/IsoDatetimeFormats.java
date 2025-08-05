@@ -2,7 +2,7 @@ package com.employees.pairs.validator.dates;
 
 import java.util.List;
 
-public class IsoDatetimeFormats extends DateParserProcessor {
+class IsoDatetimeFormats extends DateParserProcessor {
 
     public IsoDatetimeFormats(DateParserProcessor processor) {
         super(processor, List.of(

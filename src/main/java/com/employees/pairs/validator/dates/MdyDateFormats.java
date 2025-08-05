@@ -2,7 +2,7 @@ package com.employees.pairs.validator.dates;
 
 import java.util.List;
 
-public class MdyDateFormats extends DateParserProcessor {
+class MdyDateFormats extends DateParserProcessor {
 
     public MdyDateFormats(DateParserProcessor parser) {
         super(parser, List.of(

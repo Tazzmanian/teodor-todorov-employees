@@ -2,7 +2,7 @@ package com.employees.pairs.validator.dates;
 
 import java.util.List;
 
-public class TxtMonthDateFormat extends DateParserProcessor {
+class TxtMonthDateFormat extends DateParserProcessor {
 
     public TxtMonthDateFormat(DateParserProcessor parser) {
         super(parser, List.of(

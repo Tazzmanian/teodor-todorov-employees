@@ -46,7 +46,7 @@ http://localhost:8085
 
 Solution is no good:
 * Base logic is concentrated in single class, the architecture is not clearly constructed, the controllers and layers are mixed.
-* Missing abstractions - chain-of-responsibility is made of public classes without interfaces
+* ~~Missing abstractions - chain-of-responsibility is made of public classes without interfaces~~ I am using `abstract class` not sure what abstraction did they expect
 * Validation is hard to follow with to many constructors.
 * Exception handling is vague/missing - without checks on new row.
 * missing code comments.
