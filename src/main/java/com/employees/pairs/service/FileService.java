@@ -124,12 +124,16 @@ public class FileService implements FileServiceRest, FileServiceUI {
             Reader reader = new InputStreamReader(file.getInputStream());
             CSVParser parser = new CSVParserBuilder().withSeparator(delimiter).withIgnoreQuotations(true).build();
             try (CSVReader csvReader = new CSVReaderBuilder(reader).withCSVParser(parser).build())  {
-                return csvReader.readAll();
+                var rows = csvReader.readAll();
+                if (rows.isEmpty()) {
+                    throw new IllegalArgumentException("CSV file is empty");
+                }
+                return rows;
             } catch (CsvException e) {
-                throw new RuntimeException("Parsing csv issue");
+                throw new RuntimeException("Error parsing CSV file: " + file.getOriginalFilename(), e);
             }
         } catch (IOException e) {
-            throw new RuntimeException("File issue");
+            throw new RuntimeException("Error reading file: " + file.getOriginalFilename(), e);
         }
     }
 

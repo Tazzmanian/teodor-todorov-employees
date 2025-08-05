@@ -1,12 +1,15 @@
 package com.employees.pairs.validator.dates;
 
 import io.micrometer.common.util.StringUtils;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
+@Slf4j
 public sealed class DateParserProcessor permits
         DmyDateFormats,
         IsoDateFormats,
@@ -14,15 +17,12 @@ public sealed class DateParserProcessor permits
         MdyDateFormats,
         ShortYearDateFormats,
         TxtMonthDateFormat {
+    @Setter
     protected DateParserProcessor nextParser;
     private final List<String> formats;
 
     public DateParserProcessor(List<String> formats) {
         this.formats = formats;
-    }
-
-    public void setNextParser(DateParserProcessor parser) {
-        nextParser = parser;
     }
 
     public boolean isDate(String date) {
@@ -38,6 +38,7 @@ public sealed class DateParserProcessor permits
             try {
                 return LocalDate.parse(date, DateTimeFormatter.ofPattern(format));
             } catch (DateTimeParseException e) {
+                log.debug("Can not parse date `{}` with format `{}`", date, format);
             }
         }
 
@@ -45,6 +46,8 @@ public sealed class DateParserProcessor permits
             return nextParser.parse(date);
         }
 
-        return null;
+        log.debug("Can not parse date `{}`", date);
+        throw new IllegalArgumentException(
+                String.format("Unable to parse date '%s' with supported formats: %s", date, formats));
     }
 }

@@ -49,7 +49,7 @@ Solution is no good. Feedback:
 * ~~Missing abstractions - chain-of-responsibility is made of public classes without interfaces~~ 
 > I am using `abstract class` not sure what abstraction did they expect. I think I get it, there are no abstract methods, but don't see the point as the parse logic is the same and creates duplication.
 * ~~Validation is hard to follow with to many constructors.~~ Change it to use configuration driven (DI) approach
-* Exception handling is vague/missing - without checks on new row.
+* ~~Exception handling is vague/missing - without checks on new row.~~ Not sure but now I throw more exceptions, also throw exception if there is no match in the formats
 * missing code comments.
 * code duplication. 
 * ~~Too much of `var` usage makes it unreadable.~~ 
