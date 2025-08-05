@@ -46,9 +46,9 @@ http://localhost:8085
 
 Solution is no good:
 * Base logic is concentrated in single class, the architecture is not clearly constructed, the controllers and layers are mixed.
-* code duplication. Too much of `var` usage makes it unreadable.
 * Missing abstractions - chain-of-responsibility is made of public classes without interfaces
 * Validation is hard to follow with to many constructors.
 * Exception handling is vague/missing - without checks on new row.
 * missing code comments.
-* Algorithm doesn't cover important requirements. For example: A-B = B-A, misses cases where start and end date are same.
+* code duplication. Too much of `var` usage makes it unreadable.
+* ~~Algorithm doesn't cover important requirements. For example: A-B = B-A, misses cases where start and end date are same.~~

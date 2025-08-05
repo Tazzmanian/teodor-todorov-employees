@@ -98,7 +98,7 @@ public class FileService implements FileServiceRest, FileServiceUI {
                     var start = emp1.dateFrom().isAfter(emp2.dateFrom()) ? emp1.dateFrom() : emp2.dateFrom();
                     var end = emp1.dateTo().isBefore(emp2.dateTo()) ? emp1.dateTo() : emp2.dateTo();
 
-                    if (start.isBefore(end)) {
+                    if (start.isBefore(end) || start.isEqual(end)) {
                         var days = ChronoUnit.DAYS.between(start, end) + 1;
                         log.debug("{} - {} : {} | {}", emp1.employeeId(), emp2.employeeId(),
                                 days, projectId);
