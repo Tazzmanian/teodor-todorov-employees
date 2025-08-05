@@ -22,7 +22,7 @@ public abstract class DateParserProcessor {
         }
 
         LocalDate tmp = null;
-        for (var format : formats) {
+        for (String format : formats) {
             try {
                 tmp = LocalDate.parse(date, DateTimeFormatter.ofPattern(format));
                 return true;
@@ -42,7 +42,7 @@ public abstract class DateParserProcessor {
             return LocalDate.now();
         }
 
-        for (var format : formats) {
+        for (String format : formats) {
             try {
                 return LocalDate.parse(date, DateTimeFormatter.ofPattern(format));
             } catch (DateTimeParseException e) {

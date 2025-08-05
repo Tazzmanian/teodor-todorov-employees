@@ -50,5 +50,6 @@ Solution is no good:
 * Validation is hard to follow with to many constructors.
 * Exception handling is vague/missing - without checks on new row.
 * missing code comments.
-* code duplication. Too much of `var` usage makes it unreadable.
+* code duplication. 
+* ~~Too much of `var` usage makes it unreadable.~~ 
 * ~~Algorithm doesn't cover important requirements. For example: A-B = B-A, misses cases where start and end date are same.~~

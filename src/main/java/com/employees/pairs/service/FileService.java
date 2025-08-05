@@ -1,6 +1,5 @@
 package com.employees.pairs.service;
 
-import ch.qos.logback.core.util.StringUtil;
 import com.employees.pairs.model.EmployeeData;
 import com.employees.pairs.model.PairsResponse;
 import com.employees.pairs.validator.LineValidator;
@@ -37,18 +36,10 @@ public class FileService implements FileServiceRest, FileServiceUI {
 
     @Override
     public String getPairs(MultipartFile file, char delimiter) {
-        var lines = readAllLines(file, delimiter);
-        var data = parseData(lines);
-        var grouped = data.stream().collect(Collectors.groupingBy(EmployeeData::projectId));
+        List<EmployeeData> employeesData = getEmployeesData(file, delimiter);
+        List<PairsResponse> pairedEmployees = getSortedPairedEmployees(employeesData);
 
-        var transformed = transformGroupData(grouped);
-
-        transformed.sort(Comparator.comparing(PairsResponse::days).reversed());
-
-        log.info("{} - {} : {}", transformed.getFirst().employee1(), transformed.getFirst().employee2(),
-                transformed.getFirst().days());
-
-        var longestOverlap = transformed.getFirst();
+        PairsResponse longestOverlap = pairedEmployees.getFirst();
 
         StringBuffer sb = new StringBuffer();
         sb.append(longestOverlap.employee1())
@@ -62,44 +53,61 @@ public class FileService implements FileServiceRest, FileServiceUI {
 
     @Override
     public void populateModelWithPairs(RedirectAttributes model, MultipartFile file, char delimiter) {
-        var lines = readAllLines(file, delimiter);
-        var data = parseData(lines);
+        List<EmployeeData> employeesData = getEmployeesData(file, delimiter);
 
-        model.addFlashAttribute("list", data);
+        model.addFlashAttribute("list", employeesData);
 
-        var grouped = data.stream().collect(Collectors.groupingBy(EmployeeData::projectId));
-        var transformed = transformGroupData(grouped);
-        transformed.sort(Comparator.comparing(PairsResponse::days).reversed());
+        List<PairsResponse> pairedEmployees = getSortedPairedEmployees(employeesData);
 
-        model.addFlashAttribute("datagrid", transformed);
+        model.addFlashAttribute("datagrid", pairedEmployees.reversed());
 
-        var longestOverlap = transformed.getFirst();
+        PairsResponse longestOverlap = pairedEmployees.getFirst();
 
         model.addFlashAttribute("longestOverlap", longestOverlap);
     }
 
-    private List<PairsResponse> transformGroupData(Map<Integer, List<EmployeeData>> grouped) {
+    private List<EmployeeData> getEmployeesData(MultipartFile file, char delimiter) {
+        List<String[]> lines = readAllLines(file, delimiter);
+        return parseEmployeeData(lines);
+    }
+
+    private List<PairsResponse> getSortedPairedEmployees(List<EmployeeData> employeesData) {
+        Map<Integer, List<EmployeeData>> groupEmployeesByProjectId =
+                employeesData.stream().collect(Collectors.groupingBy(EmployeeData::projectId));
+
+        List<PairsResponse> pairedEmployees = getPairResponseFromGroupedEmployeeData(groupEmployeesByProjectId);
+
+        pairedEmployees.sort(Comparator.comparing(PairsResponse::days).reversed());
+
+        log.info("{} - {} : {}", pairedEmployees.getFirst().employee1(), pairedEmployees.getFirst().employee2(),
+                pairedEmployees.getFirst().days());
+
+        return pairedEmployees;
+    }
+
+    private List<PairsResponse> getPairResponseFromGroupedEmployeeData(Map<Integer, List<EmployeeData>> grouped) {
         List<PairsResponse> response = new ArrayList<>();
 
-        for (var group : grouped.entrySet()) {
-            var projectId = group.getKey();
-            var list = group.getValue();
+        for (Map.Entry<Integer, List<EmployeeData>> group : grouped.entrySet()) {
+            int projectId = group.getKey();
+            List<EmployeeData> employeesData = group.getValue();
 
-            if (list.size() == 1) {
-                response.add(new PairsResponse(list.getFirst().employeeId(), null, projectId, 0L));
+            if (employeesData.size() == 1) {
+                response.add(new PairsResponse(employeesData.getFirst().employeeId(), null, projectId, 0L));
                 continue;
             }
 
-            for (int i = 0; i < list.size(); i++) {
-                for (int j = i + 1; j < list.size(); j++) {
-                    var emp1 = list.get(i);
-                    var emp2 = list.get(j);
+            for (int i = 0; i < employeesData.size(); i++) {
+                for (int j = i + 1; j < employeesData.size(); j++) {
+                    EmployeeData emp1 = employeesData.get(i);
+                    EmployeeData emp2 = employeesData.get(j);
 
-                    var start = emp1.dateFrom().isAfter(emp2.dateFrom()) ? emp1.dateFrom() : emp2.dateFrom();
-                    var end = emp1.dateTo().isBefore(emp2.dateTo()) ? emp1.dateTo() : emp2.dateTo();
+                    LocalDate startDate = emp1.dateFrom().isAfter(emp2.dateFrom()) ? emp1.dateFrom() : emp2.dateFrom();
+                    LocalDate endDate = emp1.dateTo().isBefore(emp2.dateTo()) ? emp1.dateTo() : emp2.dateTo();
 
-                    if (start.isBefore(end) || start.isEqual(end)) {
-                        var days = ChronoUnit.DAYS.between(start, end) + 1;
+                    if (startDate.isBefore(endDate) ||
+                            startDate.isEqual(endDate)) {
+                        long days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
                         log.debug("{} - {} : {} | {}", emp1.employeeId(), emp2.employeeId(),
                                 days, projectId);
                         response.add(new PairsResponse(emp1.employeeId(), emp2.employeeId(), projectId, days));
@@ -125,7 +133,7 @@ public class FileService implements FileServiceRest, FileServiceUI {
         }
     }
 
-    private List<EmployeeData> parseData(List<String[]> lines) {
+    private List<EmployeeData> parseEmployeeData(List<String[]> lines) {
         return lines.stream().filter(lineValidator::validate)
                 .map(x -> new EmployeeData(Integer.parseInt(x[0]),
                         Integer.parseInt(x[1]),
@@ -133,13 +141,4 @@ public class FileService implements FileServiceRest, FileServiceUI {
                         dateParserProcessor.parse(x[3])))
                 .toList();
     }
-
-    private LocalDate parseDate(String date) {
-        if (StringUtil.isNullOrEmpty(date)) {
-            return LocalDate.now();
-        }
-
-        return null;
-    }
-
 }
