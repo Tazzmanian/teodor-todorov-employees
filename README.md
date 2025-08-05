@@ -45,12 +45,19 @@ http://localhost:8085
 
 
 Solution is no good. Feedback:
-* Base logic is concentrated in single class, the architecture is not clearly constructed, the controllers and layers are mixed.
+* Base logic is concentrated in single class, the architecture is not clearly constructed, 
+the controllers and layers are mixed.
 * ~~Missing abstractions - chain-of-responsibility is made of public classes without interfaces~~ 
-> I am using `abstract class` not sure what abstraction did they expect. I think I get it, there are no abstract methods, but don't see the point as the parse logic is the same and creates duplication.
-* ~~Validation is hard to follow with to many constructors.~~ Change it to use configuration driven (DI) approach
-* ~~Exception handling is vague/missing - without checks on new row.~~ Not sure but now I throw more exceptions, also throw exception if there is no match in the formats
-* missing code comments.
+> I am using `abstract class` not sure what abstraction did they expect. 
+> I think I get it, there are no abstract methods, but don't see the point as the 
+> parse logic is the same and creates duplication.
+* ~~Validation is hard to follow with to many constructors.~~ 
+Change it to use configuration driven (DI) approach
+* ~~Exception handling is vague/missing - without checks on new row.~~ 
+Not sure but now I throw more exceptions, also throw exception if there is no match in the formats
+* ~~missing code comments.~~ I don't think this is needed. Based on Clean Code if I name my methods and 
+field it becomes redundant, if added they need to be taken cared when code is changed. 
+And comments were never part of the task description. 
 * code duplication. 
 * ~~Too much of `var` usage makes it unreadable.~~ 
 * ~~Algorithm doesn't cover important requirements. For example: A-B = B-A, misses cases where start and end date are same.~~
