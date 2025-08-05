@@ -1,4 +1,4 @@
-package com.employees.pairs.service;
+package com.employees.pairs.utils;
 
 import com.employees.pairs.model.EmployeeData;
 import com.employees.pairs.model.PairsResponse;
@@ -11,9 +11,8 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,51 +26,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
-public class FileService implements FileServiceRest, FileServiceUI {
+public class FileUtilsImpl implements FileUtils {
 
     private final LineValidator lineValidator;
     private final DateParserProcessor dateParserProcessor;
 
-    @Override
-    public String getPairs(MultipartFile file, char delimiter) {
-        List<EmployeeData> employeesData = getEmployeesData(file, delimiter);
-        List<PairsResponse> pairedEmployees = getSortedPairedEmployees(employeesData);
-
-        PairsResponse longestOverlap = pairedEmployees.getFirst();
-
-        StringBuffer sb = new StringBuffer();
-        sb.append(longestOverlap.employee1())
-                .append(", ")
-                .append(longestOverlap.employee2())
-                .append(", ")
-                .append(longestOverlap.days());
-
-        return sb.toString();
-    }
-
-    @Override
-    public void populateModelWithPairs(RedirectAttributes model, MultipartFile file, char delimiter) {
-        List<EmployeeData> employeesData = getEmployeesData(file, delimiter);
-
-        model.addFlashAttribute("list", employeesData);
-
-        List<PairsResponse> pairedEmployees = getSortedPairedEmployees(employeesData);
-
-        model.addFlashAttribute("datagrid", pairedEmployees);
-
-        PairsResponse longestOverlap = pairedEmployees.getFirst();
-
-        model.addFlashAttribute("longestOverlap", longestOverlap);
-    }
-
-    private List<EmployeeData> getEmployeesData(MultipartFile file, char delimiter) {
+    public List<EmployeeData> getEmployeesData(MultipartFile file, char delimiter) {
         List<String[]> lines = readAllLines(file, delimiter);
         return parseEmployeeData(lines);
     }
 
-    private List<PairsResponse> getSortedPairedEmployees(List<EmployeeData> employeesData) {
+    public List<PairsResponse> getSortedPairedEmployees(List<EmployeeData> employeesData) {
         Map<Integer, List<EmployeeData>> groupEmployeesByProjectId =
                 employeesData.stream().collect(Collectors.groupingBy(EmployeeData::projectId));
 
