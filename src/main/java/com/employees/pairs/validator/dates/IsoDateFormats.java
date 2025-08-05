@@ -2,10 +2,10 @@ package com.employees.pairs.validator.dates;
 
 import java.util.List;
 
-class IsoDateFormats extends DateParserProcessor {
+final class IsoDateFormats extends DateParserProcessor {
 
-    public IsoDateFormats(DateParserProcessor parser) {
-        super(parser, List.of(
+    public IsoDateFormats() {
+        super(List.of(
                 "yyyy-MM-dd",        // 2024-08-01
                 "yyyy/MM/dd",        // 2024/08/01
                 "yyyy.MM.dd",        // 2024.08.01

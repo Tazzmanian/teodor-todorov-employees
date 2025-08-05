@@ -59,7 +59,7 @@ public class FileService implements FileServiceRest, FileServiceUI {
 
         List<PairsResponse> pairedEmployees = getSortedPairedEmployees(employeesData);
 
-        model.addFlashAttribute("datagrid", pairedEmployees.reversed());
+        model.addFlashAttribute("datagrid", pairedEmployees);
 
         PairsResponse longestOverlap = pairedEmployees.getFirst();
 

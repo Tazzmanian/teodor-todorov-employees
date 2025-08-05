@@ -7,34 +7,26 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
-public abstract class DateParserProcessor {
-    public DateParserProcessor nextParser;
-    public List<String> formats;
+public sealed class DateParserProcessor permits
+        DmyDateFormats,
+        IsoDateFormats,
+        IsoDatetimeFormats,
+        MdyDateFormats,
+        ShortYearDateFormats,
+        TxtMonthDateFormat {
+    protected DateParserProcessor nextParser;
+    private final List<String> formats;
 
-    public DateParserProcessor(DateParserProcessor parser, List<String> formats) {
-        nextParser = parser;
+    public DateParserProcessor(List<String> formats) {
         this.formats = formats;
     }
 
+    public void setNextParser(DateParserProcessor parser) {
+        nextParser = parser;
+    }
+
     public boolean isDate(String date) {
-        if (StringUtils.isBlank(date)) {
-            return true;
-        }
-
-        LocalDate tmp = null;
-        for (String format : formats) {
-            try {
-                tmp = LocalDate.parse(date, DateTimeFormatter.ofPattern(format));
-                return true;
-            } catch (DateTimeParseException e) {
-            }
-        }
-
-        if (tmp == null && nextParser != null) {
-            return nextParser.isDate(date);
-        }
-
-        return false;
+        return parse(date) != null;
     }
 
     public LocalDate parse(String date) {

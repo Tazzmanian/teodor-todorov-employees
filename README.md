@@ -44,10 +44,11 @@ http://localhost:8085
 > Note: Keep in mind there are no validation.
 
 
-Solution is no good:
+Solution is no good. Feedback:
 * Base logic is concentrated in single class, the architecture is not clearly constructed, the controllers and layers are mixed.
-* ~~Missing abstractions - chain-of-responsibility is made of public classes without interfaces~~ I am using `abstract class` not sure what abstraction did they expect
-* Validation is hard to follow with to many constructors.
+* ~~Missing abstractions - chain-of-responsibility is made of public classes without interfaces~~ 
+> I am using `abstract class` not sure what abstraction did they expect. I think I get it, there are no abstract methods, but don't see the point as the parse logic is the same and creates duplication.
+* ~~Validation is hard to follow with to many constructors.~~ Change it to use configuration driven (DI) approach
 * Exception handling is vague/missing - without checks on new row.
 * missing code comments.
 * code duplication. 

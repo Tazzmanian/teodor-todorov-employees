@@ -2,10 +2,10 @@ package com.employees.pairs.validator.dates;
 
 import java.util.List;
 
-class MdyDateFormats extends DateParserProcessor {
+final class MdyDateFormats extends DateParserProcessor {
 
-    public MdyDateFormats(DateParserProcessor parser) {
-        super(parser, List.of(
+    public MdyDateFormats() {
+        super(List.of(
                 "MM-dd-yyyy",        // 08-01-2024
                 "MM/dd/yyyy",        // 08/01/2024
                 "MM.dd.yyyy",        // 08.01.2024
